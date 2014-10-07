@@ -18,7 +18,7 @@ import javax.swing.JEditorPane;
  */
 public class TableToClass {
 
-    public void gerar(String ip, String banco, String usuario, String senha, String tabela, JEditorPane classe, JEditorPane insercao, JEditorPane remocao, JEditorPane cargaobjeto) {
+    public void gerar(String ip, String banco, String usuario, String senha, String tabela, JEditorPane classe, JEditorPane insercao, JEditorPane remocao, JEditorPane cargaobjeto, JEditorPane leituraObjeto) {
         ResultSet rs = null;
         ResultSetMetaData rsmd = null;
         Connection con = null;
@@ -64,6 +64,7 @@ public class TableToClass {
 
             insercao.setText(criarMetodoSalvarAtualizar(tabela, rsmd, pkey));
             cargaobjeto.setText(criarObjetoCarga(tabela, rsmd));
+            leituraObjeto.setText(criarLeituraObjeto(tabela, rsmd));
             remocao.setText(criarMetodoExcluir(tabela, pkey));
 
         } catch (Exception ex) {
@@ -133,6 +134,14 @@ public class TableToClass {
         StringBuilder retorno = new StringBuilder();
         for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
             retorno.append("\n " + tableName + ".set" + rsMetadata.getColumnName(i) + "(\"?\");");
+        }
+        return retorno.toString();
+    }
+    
+    private String criarLeituraObjeto(String tableName, ResultSetMetaData rsMetadata) throws Exception {
+        StringBuilder retorno = new StringBuilder();
+        for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
+            retorno.append("\n " + tableName + ".get" + rsMetadata.getColumnName(i) + "();");
         }
         return retorno.toString();
     }
