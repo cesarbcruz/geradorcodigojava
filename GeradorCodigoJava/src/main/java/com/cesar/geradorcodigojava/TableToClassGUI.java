@@ -182,7 +182,7 @@ public class TableToClassGUI extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        new TableToClass().gerar(ip.getText(), banco.getText(), usuario.getText(), senha.getText(), tabela.getText(), classe, insercao, remocao);
+            new TableToClass().gerar(ip.getText(), banco.getText(), usuario.getText(), senha.getText(), tabela.getText(), classe, insercao, remocao);        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

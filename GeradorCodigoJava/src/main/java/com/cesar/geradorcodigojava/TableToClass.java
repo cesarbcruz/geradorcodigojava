@@ -9,8 +9,6 @@ package com.cesar.geradorcodigojava;
  * the editor.
  */
 import java.sql.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JEditorPane;
 
 /**
@@ -66,22 +64,25 @@ public class TableToClass {
             insercao.setText(criarMetodoSalvarAtualizar(tabela, rsmd, pkey));
 
         } catch (Exception ex) {
-            Logger.getLogger(TableToClass.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex.getMessage());
         } finally {
-            try {
-                rs.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(TableToClass.class.getName()).log(Level.SEVERE, null, ex);
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                }
             }
-            try {
-                stmt.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(TableToClass.class.getName()).log(Level.SEVERE, null, ex);
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ex) {
+                }
             }
-            try {
-                con.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(TableToClass.class.getName()).log(Level.SEVERE, null, ex);
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException ex) {
+                }
             }
         }
     }

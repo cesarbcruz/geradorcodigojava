@@ -1,5 +1,7 @@
 package com.cesar.geradorcodigojava;
 
+import javax.swing.JFrame;
+
 /**
  * Hello world!
  *
@@ -19,7 +21,7 @@ public class App {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 System.out.println(info.getName());
-                if ("CDE/Motif".equals(info.getName())) {
+                if ("Metal".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -38,11 +40,13 @@ public class App {
         /*
          * Create and display the form
          */
-        java.awt.EventQueue.invokeLater(new Runnable() {
 
-            public void run() {
-                new TableToClassGUI().setVisible(true);
-            }
-        });
+
+        Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler());
+        TableToClassGUI gui = new TableToClassGUI();
+        gui.pack();
+        gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        gui.setVisible(true);
+
     }
 }
