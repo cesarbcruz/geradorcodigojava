@@ -46,6 +46,8 @@ public class TableToClassGUI extends javax.swing.JFrame {
         remocao = new javax.swing.JEditorPane();
         jScrollPane4 = new javax.swing.JScrollPane();
         cargaObjeto = new javax.swing.JEditorPane();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        leituraObjeto = new javax.swing.JEditorPane();
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
 
@@ -141,6 +143,10 @@ public class TableToClassGUI extends javax.swing.JFrame {
         jScrollPane4.setViewportView(cargaObjeto);
 
         jTabbedPane1.addTab("CARGA DO OBJETO", jScrollPane4);
+
+        jScrollPane5.setViewportView(leituraObjeto);
+
+        jTabbedPane1.addTab("LEITURA OBJETO", jScrollPane5);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -250,7 +256,9 @@ public class TableToClassGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JEditorPane leituraObjeto;
     private javax.swing.JEditorPane remocao;
     private javax.swing.JTextField senha;
     private javax.swing.JTextField tabela;
