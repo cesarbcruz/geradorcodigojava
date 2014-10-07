@@ -44,6 +44,10 @@ public class TableToClassGUI extends javax.swing.JFrame {
         insercao = new javax.swing.JEditorPane();
         jScrollPane3 = new javax.swing.JScrollPane();
         remocao = new javax.swing.JEditorPane();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        cargaObjeto = new javax.swing.JEditorPane();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        leituraObjeto = new javax.swing.JEditorPane();
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
 
@@ -135,6 +139,15 @@ public class TableToClassGUI extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("MÉTODO REMOÇÂO", jScrollPane3);
 
+        cargaObjeto.setEditable(false);
+        jScrollPane4.setViewportView(cargaObjeto);
+
+        jTabbedPane1.addTab("CARGA DO OBJETO", jScrollPane4);
+
+        jScrollPane5.setViewportView(leituraObjeto);
+
+        jTabbedPane1.addTab("LEITURA OBJETO", jScrollPane5);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
@@ -158,7 +171,7 @@ public class TableToClassGUI extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButton1)
-                .addContainerGap(363, Short.MAX_VALUE))
+                .addContainerGap(362, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -182,7 +195,7 @@ public class TableToClassGUI extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        new TableToClass().gerar(ip.getText(), banco.getText(), usuario.getText(), senha.getText(), tabela.getText(), classe, insercao, remocao);
+            new TableToClass().gerar(ip.getText(), banco.getText(), usuario.getText(), senha.getText(), tabela.getText(), classe, insercao, remocao, cargaObjeto);        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -228,6 +241,7 @@ public class TableToClassGUI extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField banco;
+    private javax.swing.JEditorPane cargaObjeto;
     private javax.swing.JEditorPane classe;
     private javax.swing.JEditorPane insercao;
     private javax.swing.JTextField ip;
@@ -241,7 +255,10 @@ public class TableToClassGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JEditorPane leituraObjeto;
     private javax.swing.JEditorPane remocao;
     private javax.swing.JTextField senha;
     private javax.swing.JTextField tabela;

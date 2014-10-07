@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<<<<<<< HEAD
 <testsuite failures="0" time="0.015" errors="0" skipped="0" tests="1" name="com.cesar.geradorcodigojava.AppTest">
+=======
+<testsuite failures="0" time="0.008" errors="0" skipped="0" tests="1" name="com.cesar.geradorcodigojava.AppTest">
+>>>>>>> 0c7eb4d2de4a594a4810030a732cb9f2f528c2ae
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/opt/Packages/jdk1.6.0_24/jre/lib/amd64"/>
@@ -14,7 +18,11 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.os.patch.level" value="unknown"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+<<<<<<< HEAD
     <property name="user.dir" value="/home/cesar/repositorio/git/geradorcodigojava/GeradorCodigoJava"/>
+=======
+    <property name="user.dir" value="/home/cesar/Logic/GIT/geradorcodigojava/GeradorCodigoJava"/>
+>>>>>>> 0c7eb4d2de4a594a4810030a732cb9f2f528c2ae
     <property name="java.runtime.version" value="1.6.0_24-b07"/>
     <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"/>
     <property name="java.endorsed.dirs" value="/opt/Packages/jdk1.6.0_24/jre/lib/endorsed"/>
@@ -30,7 +38,7 @@
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.class.version" value="50.0"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Server Compiler"/>
-    <property name="os.version" value="3.13.0-34-generic"/>
+    <property name="os.version" value="3.2.0-23-generic"/>
     <property name="user.home" value="/home/cesar"/>
     <property name="user.timezone" value="America/Sao_Paulo"/>
     <property name="java.awt.printerjob" value="sun.print.PSPrinterJob"/>

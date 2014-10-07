@@ -9,8 +9,6 @@ package com.cesar.geradorcodigojava;
  * the editor.
  */
 import java.sql.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JEditorPane;
 
 /**
@@ -19,7 +17,7 @@ import javax.swing.JEditorPane;
  */
 public class TableToClass {
 
-    public void gerar(String ip, String banco, String usuario, String senha, String tabela, JEditorPane classe, JEditorPane insercao, JEditorPane remocao) {
+    public void gerar(String ip, String banco, String usuario, String senha, String tabela, JEditorPane classe, JEditorPane insercao, JEditorPane remocao, JEditorPane cargaobjeto) {
         ResultSet rs = null;
         ResultSetMetaData rsmd = null;
         Connection con = null;
@@ -56,7 +54,7 @@ public class TableToClass {
             classe.setText(textoClasse.toString());
 
             DatabaseMetaData dm = con.getMetaData();
-            String pkey = "pkey";
+            String pkey = "<Não encontrou a chave>";
             ResultSet rsMeta = dm.getExportedKeys("", "", tabela);
             while (rsMeta.next()) {
                 pkey = rsMeta.getString("PKCOLUMN_NAME");
@@ -64,26 +62,38 @@ public class TableToClass {
             rsMeta.close();
 
             insercao.setText(criarMetodoSalvarAtualizar(tabela, rsmd, pkey));
+            cargaobjeto.setText(criarObjetoCarga(tabela, rsmd));
 
         } catch (Exception ex) {
-            Logger.getLogger(TableToClass.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex.getMessage());
         } finally {
-            try {
-                rs.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(TableToClass.class.getName()).log(Level.SEVERE, null, ex);
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                }
             }
-            try {
-                stmt.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(TableToClass.class.getName()).log(Level.SEVERE, null, ex);
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ex) {
+                }
             }
-            try {
-                con.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(TableToClass.class.getName()).log(Level.SEVERE, null, ex);
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException ex) {
+                }
             }
         }
+    }
+    
+    private String criarObjetoCarga(String tableName, ResultSetMetaData rsMetadata) throws Exception {
+        StringBuilder retorno = new StringBuilder();
+        for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
+            retorno.append("\n "+tableName+".set"+rsMetadata.getColumnName(i)+"(\"?\");");
+        }           
+        return retorno.toString();
     }
 
     private String criarMetodoSalvarAtualizar(String tableName, ResultSetMetaData rsMetadata, String pkey) throws Exception {
@@ -93,15 +103,17 @@ public class TableToClass {
         insertUpdateMetodo.append("\n     Connection con = null;");
         insertUpdateMetodo.append("\n     PreparedStatement pstInsert = null;");
         insertUpdateMetodo.append("\n     PreparedStatement pstUpdate = null;");
+        insertUpdateMetodo.append("\n     Statement stm = null;");
+        insertUpdateMetodo.append("\n     ResultSet rs = null;");
         insertUpdateMetodo.append("\n");
         insertUpdateMetodo.append("\n     try {");
         insertUpdateMetodo.append("\n");
         insertUpdateMetodo.append("\n         con = conectaBDerp();");
+        insertUpdateMetodo.append("\n         stm = con.createStatement();");
         insertUpdateMetodo.append("\n         StringBuffer sql = new StringBuffer();");
         insertUpdateMetodo.append("\n         sql.append(\"insert into ").append(tableName).append("(\");");
         String parametros = "";
-        for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
-            if (!rsMetadata.getColumnName(i).equals(pkey)) {
+        for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {            
                 String separador = "";
                 parametros += "?";
                 if (i < rsMetadata.getColumnCount()) {
@@ -109,14 +121,13 @@ public class TableToClass {
                     parametros += ",";
                 }
                 insertUpdateMetodo.append("\n         sql.append(\"" + rsMetadata.getColumnName(i)).append(separador + "\");");
-            }
         }
         insertUpdateMetodo.append("\n         sql.append(\") values (" + parametros + ") \");");
         insertUpdateMetodo.append("\n         pstInsert = con.prepareStatement(sql.toString());");
         insertUpdateMetodo.append("\n");
         insertUpdateMetodo.append("\n         sql.delete(0, sql.length());");
         insertUpdateMetodo.append("\n");
-        insertUpdateMetodo.append("\n         sql.append(\"update ").append(tableName).append(" set\");");
+        insertUpdateMetodo.append("\n         sql.append(\"update ").append(tableName).append(" set \");");
         for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
             if (!rsMetadata.getColumnName(i).equals(pkey)) {
                 String separador = "";
@@ -135,6 +146,11 @@ public class TableToClass {
         insertUpdateMetodo.append("\n");
         insertUpdateMetodo.append("\n         for (" + tableName + " obj : lista" + tableName + ") {");
         insertUpdateMetodo.append("\n           if( obj.get" + pkey + "() == 0 ){");
+        insertUpdateMetodo.append("\n");
+        insertUpdateMetodo.append("\n           rs = stm.executeQuery(\"SELECT nextval(('"+tableName+"_"+pkey+"_seq'::text)::regclass) as id\");");
+        insertUpdateMetodo.append("\n           if (rs.next()) {");
+        insertUpdateMetodo.append("\n               obj.set"+pkey+"(rs.getInt(\"id\"));");
+        insertUpdateMetodo.append("\n           }");
         insertUpdateMetodo.append("\n");
         int index = 0;
         for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
@@ -177,6 +193,7 @@ public class TableToClass {
         insertUpdateMetodo.append("\n     }catch (Exception ex) {");
         insertUpdateMetodo.append("\n        throw new Exception(ex.getMessage()+\"\\n\"+this.getClass().getName()+\".salvar" + tableName + "()\");");
         insertUpdateMetodo.append("\n     } finally {");
+        insertUpdateMetodo.append("\n         freeResources(rs, stm, null);");
         insertUpdateMetodo.append("\n         freeResources(null, pstUpdate, null);");
         insertUpdateMetodo.append("\n         freeResources(null, pstInsert, con);");
         insertUpdateMetodo.append("\n     }");

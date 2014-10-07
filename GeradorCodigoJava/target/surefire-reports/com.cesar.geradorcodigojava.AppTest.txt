@@ -1,4 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.cesar.geradorcodigojava.AppTest
 -------------------------------------------------------------------------------
+<<<<<<< HEAD
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 sec
+=======
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 sec
+>>>>>>> 0c7eb4d2de4a594a4810030a732cb9f2f528c2ae
