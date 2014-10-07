@@ -9,6 +9,7 @@ package com.cesar.geradorcodigojava;
  * the editor.
  */
 import java.sql.*;
+import java.util.List;
 import javax.swing.JEditorPane;
 
 /**
@@ -63,6 +64,7 @@ public class TableToClass {
 
             insercao.setText(criarMetodoSalvarAtualizar(tabela, rsmd, pkey));
             cargaobjeto.setText(criarObjetoCarga(tabela, rsmd));
+            remocao.setText(criarMetodoExcluir(tabela, pkey));
 
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
@@ -87,12 +89,51 @@ public class TableToClass {
             }
         }
     }
-    
+
+    private String criarMetodoExcluir(String tableName, String pkey) {
+        StringBuilder retorno = new StringBuilder();
+        retorno.append("\n private void excluir"+tableName+"(List<"+tableName+"> lista"+tableName+") throws Exception {");
+        retorno.append("\n Connection con = null;");
+        retorno.append("\n PreparedStatement pstDelete = null;");
+        retorno.append("\n StringBuilder sql = new StringBuilder();");
+        retorno.append("\n ");
+        retorno.append("\n try {");
+        retorno.append("\n ");
+        retorno.append("\n     con = conectaBDerp();          ");
+        retorno.append("\n     sql.append(\"delete from "+tableName+" where "+pkey+" = ?\");            ");
+        retorno.append("\n     pstDelete = con.prepareStatement(sql.toString());");
+        retorno.append("\n ");
+        retorno.append("\n     final int batchSize = 1000;");
+        retorno.append("\n     int count = 0;");
+        retorno.append("\n ");
+        retorno.append("\n     for ("+tableName+" obj : lista"+tableName+") {");
+        retorno.append("\n ");
+        retorno.append("\n             pstDelete.setInt(1, obj.get"+pkey+"());");
+        retorno.append("\n ");
+        retorno.append("\n             pstDelete.addBatch();");
+        retorno.append("\n             if (++count % batchSize == 0) {");
+        retorno.append("\n                 pstDelete.executeBatch();");
+        retorno.append("\n             }");
+        retorno.append("\n     }");
+        retorno.append("\n     ");
+        retorno.append("\n     if (pstDelete != null) {");
+        retorno.append("\n         pstDelete.executeBatch();");
+        retorno.append("\n     }");
+        retorno.append("\n ");
+        retorno.append("\n } catch (Exception ex) {");
+        retorno.append("\n        throw new Exception(ex.getMessage()+\"\\n\"+this.getClass().getName()+\".excluir" + tableName + "()\");");
+        retorno.append("\n } finally {");
+        retorno.append("\n     freeResources(null, pstDelete, con);");
+        retorno.append("\n }");
+        retorno.append("\n }");
+        return retorno.toString();
+    }
+
     private String criarObjetoCarga(String tableName, ResultSetMetaData rsMetadata) throws Exception {
         StringBuilder retorno = new StringBuilder();
         for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
-            retorno.append("\n "+tableName+".set"+rsMetadata.getColumnName(i)+"(\"?\");");
-        }           
+            retorno.append("\n " + tableName + ".set" + rsMetadata.getColumnName(i) + "(\"?\");");
+        }
         return retorno.toString();
     }
 
@@ -113,14 +154,14 @@ public class TableToClass {
         insertUpdateMetodo.append("\n         StringBuffer sql = new StringBuffer();");
         insertUpdateMetodo.append("\n         sql.append(\"insert into ").append(tableName).append("(\");");
         String parametros = "";
-        for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {            
-                String separador = "";
-                parametros += "?";
-                if (i < rsMetadata.getColumnCount()) {
-                    separador = ",";
-                    parametros += ",";
-                }
-                insertUpdateMetodo.append("\n         sql.append(\"" + rsMetadata.getColumnName(i)).append(separador + "\");");
+        for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
+            String separador = "";
+            parametros += "?";
+            if (i < rsMetadata.getColumnCount()) {
+                separador = ",";
+                parametros += ",";
+            }
+            insertUpdateMetodo.append("\n         sql.append(\"" + rsMetadata.getColumnName(i)).append(separador + "\");");
         }
         insertUpdateMetodo.append("\n         sql.append(\") values (" + parametros + ") \");");
         insertUpdateMetodo.append("\n         pstInsert = con.prepareStatement(sql.toString());");
@@ -147,9 +188,9 @@ public class TableToClass {
         insertUpdateMetodo.append("\n         for (" + tableName + " obj : lista" + tableName + ") {");
         insertUpdateMetodo.append("\n           if( obj.get" + pkey + "() == 0 ){");
         insertUpdateMetodo.append("\n");
-        insertUpdateMetodo.append("\n           rs = stm.executeQuery(\"SELECT nextval(('"+tableName+"_"+pkey+"_seq'::text)::regclass) as id\");");
+        insertUpdateMetodo.append("\n           rs = stm.executeQuery(\"SELECT nextval(('" + tableName + "_" + pkey + "_seq'::text)::regclass) as id\");");
         insertUpdateMetodo.append("\n           if (rs.next()) {");
-        insertUpdateMetodo.append("\n               obj.set"+pkey+"(rs.getInt(\"id\"));");
+        insertUpdateMetodo.append("\n               obj.set" + pkey + "(rs.getInt(\"id\"));");
         insertUpdateMetodo.append("\n           }");
         insertUpdateMetodo.append("\n");
         int index = 0;
