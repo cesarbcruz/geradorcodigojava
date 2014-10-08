@@ -66,7 +66,7 @@ public class TableToClass {
             cargaobjeto.setText(criarObjetoCarga(tabela, rsmd));
             leituraObjeto.setText(criarLeituraObjeto(tabela, rsmd));
             remocao.setText(criarMetodoExcluir(tabela, pkey));
-            metodoBuscar.setText(criarMetodoBuscar(tabela, rsmd));
+            metodoBuscar.setText(criarMetodoBuscar(tabela, rsmd, pkey));
 
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
@@ -128,31 +128,31 @@ public class TableToClass {
         return retorno.toString();
     }
 
-    private String criarMetodoBuscar(String tableName, ResultSetMetaData rsMetadata) throws Exception {
+    private String criarMetodoBuscar(String tableName, ResultSetMetaData rsMetadata, String pKey) throws Exception {
         StringBuilder retorno = new StringBuilder();
 
-        retorno.append("\n public CardexContabilVO buscarCardexContabil(int idCardexContabil) throws Exception {");
+        retorno.append("\n public "+tableName+" buscar"+tableName+"(int id"+tableName+") throws Exception {");
         retorno.append("\n Connection con = null;");
         retorno.append("\n PreparedStatement pstSelect = null;");
         retorno.append("\n StringBuilder sql = new StringBuilder();");
         retorno.append("\n ResultSet rs = null;");
-        retorno.append("\n CardexContabilVO cardexcontabil = null;");
+        retorno.append("\n "+tableName+" obj = null;");
         retorno.append("\n ");
         retorno.append("\n try {");
         retorno.append("\n ");
         retorno.append("\n     con = conectaBDerp();");
-        retorno.append("\n     sql.append(\"select * from cardexcontabil where id = ?\");");
+        retorno.append("\n     sql.append(\"select * from "+tableName+" where "+pKey+" = ?\");");
         retorno.append("\n     pstSelect = con.prepareStatement(sql.toString());");
-        retorno.append("\n     pstSelect.setInt(1, idCardexContabil);");
+        retorno.append("\n     pstSelect.setInt(1, id"+tableName+");");
         retorno.append("\n     rs = pstSelect.executeQuery();");
         retorno.append("\n     while (rs.next()) {");
-        retorno.append("\n             cardexcontabil = new CardexContabilVO();");
+        retorno.append("\n             obj = new "+tableName+"();");
         for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
             retorno.append("\n             " + tableName + ".set" + rsMetadata.getColumnName(i) + "(rs.get" + setParam(rsMetadata.getColumnType(i)) + "(\"" + rsMetadata.getColumnName(i) + "\"));");
         }
         retorno.append("\n         }");
         retorno.append("\n ");
-        retorno.append("\n         return cardexcontabil;");
+        retorno.append("\n         return obj;");
         retorno.append("\n ");
         retorno.append("\n         } catch (Exception ex) {");
         retorno.append("\n              throw new Exception(ex.getMessage()+\"\\n\"+this.getClass().getName()+\".buscar" + tableName + "()\");");
