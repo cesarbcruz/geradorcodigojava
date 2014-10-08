@@ -146,10 +146,12 @@ public class TableToClassGUI extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("CARGA DO OBJETO", jScrollPane4);
 
+        leituraObjeto.setEditable(false);
         jScrollPane5.setViewportView(leituraObjeto);
 
         jTabbedPane1.addTab("LEITURA OBJETO", jScrollPane5);
 
+        metodoBuscar.setEditable(false);
         jScrollPane6.setViewportView(metodoBuscar);
 
         jTabbedPane1.addTab("MÈTODO BUSCAR", jScrollPane6);
