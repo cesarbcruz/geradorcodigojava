@@ -48,6 +48,8 @@ public class TableToClassGUI extends javax.swing.JFrame {
         cargaObjeto = new javax.swing.JEditorPane();
         jScrollPane5 = new javax.swing.JScrollPane();
         leituraObjeto = new javax.swing.JEditorPane();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        metodoBuscar = new javax.swing.JEditorPane();
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
 
@@ -148,6 +150,10 @@ public class TableToClassGUI extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("LEITURA OBJETO", jScrollPane5);
 
+        jScrollPane6.setViewportView(metodoBuscar);
+
+        jTabbedPane1.addTab("MÈTODO BUSCAR", jScrollPane6);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
@@ -195,7 +201,7 @@ public class TableToClassGUI extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-            new TableToClass().gerar(ip.getText(), banco.getText(), usuario.getText(), senha.getText(), tabela.getText(), classe, insercao, remocao, cargaObjeto, leituraObjeto);        
+        new TableToClass().gerar(ip.getText(), banco.getText(), usuario.getText(), senha.getText(), tabela.getText(), classe, insercao, remocao, cargaObjeto, leituraObjeto, metodoBuscar);        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -257,8 +263,10 @@ public class TableToClassGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JEditorPane leituraObjeto;
+    private javax.swing.JEditorPane metodoBuscar;
     private javax.swing.JEditorPane remocao;
     private javax.swing.JTextField senha;
     private javax.swing.JTextField tabela;

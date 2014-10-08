@@ -18,7 +18,7 @@ import javax.swing.JEditorPane;
  */
 public class TableToClass {
 
-    public void gerar(String ip, String banco, String usuario, String senha, String tabela, JEditorPane classe, JEditorPane insercao, JEditorPane remocao, JEditorPane cargaobjeto, JEditorPane leituraObjeto) {
+    public void gerar(String ip, String banco, String usuario, String senha, String tabela, JEditorPane classe, JEditorPane insercao, JEditorPane remocao, JEditorPane cargaobjeto, JEditorPane leituraObjeto, JEditorPane metodoBuscar) {
         ResultSet rs = null;
         ResultSetMetaData rsmd = null;
         Connection con = null;
@@ -66,6 +66,7 @@ public class TableToClass {
             cargaobjeto.setText(criarObjetoCarga(tabela, rsmd));
             leituraObjeto.setText(criarLeituraObjeto(tabela, rsmd));
             remocao.setText(criarMetodoExcluir(tabela, pkey));
+            metodoBuscar.setText(criarMetodoBuscar(tabela, rsmd));
 
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
@@ -93,51 +94,76 @@ public class TableToClass {
 
     private String criarMetodoExcluir(String tableName, String pkey) {
         StringBuilder retorno = new StringBuilder();
-        retorno.append("\n private void excluir"+tableName+"(List<"+tableName+"> lista"+tableName+") throws Exception {");
-        retorno.append("\n Connection con = null;");
-        retorno.append("\n PreparedStatement pstDelete = null;");
-        retorno.append("\n StringBuilder sql = new StringBuilder();");
-        retorno.append("\n ");
-        retorno.append("\n try {");
-        retorno.append("\n ");
-        retorno.append("\n     con = conectaBDerp();          ");
-        retorno.append("\n     sql.append(\"delete from "+tableName+" where "+pkey+" = ?\");            ");
-        retorno.append("\n     pstDelete = con.prepareStatement(sql.toString());");
-        retorno.append("\n ");
-        retorno.append("\n     final int batchSize = 1000;");
-        retorno.append("\n     int count = 0;");
-        retorno.append("\n ");
-        retorno.append("\n     for ("+tableName+" obj : lista"+tableName+") {");
-        retorno.append("\n ");
-        retorno.append("\n             pstDelete.setInt(1, obj.get"+pkey+"());");
-        retorno.append("\n ");
-        retorno.append("\n             pstDelete.addBatch();");
-        retorno.append("\n             if (++count % batchSize == 0) {");
-        retorno.append("\n                 pstDelete.executeBatch();");
-        retorno.append("\n             }");
-        retorno.append("\n     }");
-        retorno.append("\n     ");
-        retorno.append("\n     if (pstDelete != null) {");
-        retorno.append("\n         pstDelete.executeBatch();");
-        retorno.append("\n     }");
-        retorno.append("\n ");
-        retorno.append("\n } catch (Exception ex) {");
+
+        retorno.append("\npublic void excluir" + tableName + "(int id" + tableName + ") throws Exception {");
+        retorno.append("\n    Connection con = null;");
+        retorno.append("\n    PreparedStatement pstDelete = null;");
+        retorno.append("\n    StringBuilder sql = new StringBuilder();");
+        retorno.append("\n");
+        retorno.append("\n    try {");
+        retorno.append("\n");
+        retorno.append("\n        con = conectaBDerp();");
+        retorno.append("\n        sql.append(\"delete from " + tableName + " where " + pkey + " = ?\");");
+        retorno.append("\n        pstDelete = con.prepareStatement(sql.toString());");
+        retorno.append("\n");
+        retorno.append("\n        pstDelete.setInt(1, id" + tableName + "); ");
+        retorno.append("\n");
+        retorno.append("\n        pstDelete.execute();");
+        retorno.append("\n");
+        retorno.append("\n    } catch (Exception ex) {");
         retorno.append("\n        throw new Exception(ex.getMessage()+\"\\n\"+this.getClass().getName()+\".excluir" + tableName + "()\");");
-        retorno.append("\n } finally {");
-        retorno.append("\n     freeResources(null, pstDelete, con);");
-        retorno.append("\n }");
-        retorno.append("\n }");
+        retorno.append("\n    } finally {");
+        retorno.append("\n        freeResources(null, pstDelete, con);");
+        retorno.append("\n    }");
+        retorno.append("\n}");
+
         return retorno.toString();
     }
 
     private String criarObjetoCarga(String tableName, ResultSetMetaData rsMetadata) throws Exception {
         StringBuilder retorno = new StringBuilder();
         for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
-            retorno.append("\n " + tableName + ".set" + rsMetadata.getColumnName(i) + "(\"?\");");
+            retorno.append("\n " + tableName + ".set" + rsMetadata.getColumnName(i) + "(rs.get" + setParam(rsMetadata.getColumnType(i)) + "(\"" + rsMetadata.getColumnName(i) + "\"));");
         }
         return retorno.toString();
     }
-    
+
+    private String criarMetodoBuscar(String tableName, ResultSetMetaData rsMetadata) throws Exception {
+        StringBuilder retorno = new StringBuilder();
+
+        retorno.append("\n public CardexContabilVO buscarCardexContabil(int idCardexContabil) throws Exception {");
+        retorno.append("\n Connection con = null;");
+        retorno.append("\n PreparedStatement pstSelect = null;");
+        retorno.append("\n StringBuilder sql = new StringBuilder();");
+        retorno.append("\n ResultSet rs = null;");
+        retorno.append("\n CardexContabilVO cardexcontabil = null;");
+        retorno.append("\n ");
+        retorno.append("\n try {");
+        retorno.append("\n ");
+        retorno.append("\n     con = conectaBDerp();");
+        retorno.append("\n     sql.append(\"select * from cardexcontabil where id = ?\");");
+        retorno.append("\n     pstSelect = con.prepareStatement(sql.toString());");
+        retorno.append("\n     pstSelect.setInt(1, idCardexContabil);");
+        retorno.append("\n     rs = pstSelect.executeQuery();");
+        retorno.append("\n     while (rs.next()) {");
+        retorno.append("\n             cardexcontabil = new CardexContabilVO();");
+        for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
+            retorno.append("\n             " + tableName + ".set" + rsMetadata.getColumnName(i) + "(rs.get" + setParam(rsMetadata.getColumnType(i)) + "(\"" + rsMetadata.getColumnName(i) + "\"));");
+        }
+        retorno.append("\n         }");
+        retorno.append("\n ");
+        retorno.append("\n         return cardexcontabil;");
+        retorno.append("\n ");
+        retorno.append("\n         } catch (Exception ex) {");
+        retorno.append("\n              throw new Exception(ex.getMessage()+\"\\n\"+this.getClass().getName()+\".buscar" + tableName + "()\");");
+        retorno.append("\n         } finally {");
+        retorno.append("\n             freeResources(rs, pstSelect, con);");
+        retorno.append("\n         }");
+        retorno.append("\n     }");
+
+        return retorno.toString();
+    }
+
     private String criarLeituraObjeto(String tableName, ResultSetMetaData rsMetadata) throws Exception {
         StringBuilder retorno = new StringBuilder();
         for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
