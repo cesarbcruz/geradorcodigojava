@@ -135,23 +135,23 @@ public class TableToClass {
         retorno.append("\n PreparedStatement pstSelect = null;");
         retorno.append("\n StringBuilder sql = new StringBuilder();");
         retorno.append("\n ResultSet rs = null;");
-        retorno.append("\n "+tableName+" obj = null;");
+        retorno.append("\n "+tableName+" "+tableName.toLowerCase()+" = null;");
         retorno.append("\n ");
         retorno.append("\n try {");
         retorno.append("\n ");
         retorno.append("\n     con = conectaBDerp();");
         retorno.append("\n     sql.append(\"select * from "+tableName+" where "+pKey+" = ?\");");
         retorno.append("\n     pstSelect = con.prepareStatement(sql.toString());");
-        retorno.append("\n     pstSelect.setInt(1, id"+tableName+");");
+        retorno.append("\n     pstSelect.setInt(1, id").append(tableName).append(");");
         retorno.append("\n     rs = pstSelect.executeQuery();");
         retorno.append("\n     while (rs.next()) {");
-        retorno.append("\n             obj = new "+tableName+"();");
+        retorno.append("\n             ").append(tableName.toLowerCase()).append(" = new ").append(tableName).append("();");
         for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
-            retorno.append("\n             obj"  + ".set" + rsMetadata.getColumnName(i) + "(rs.get" + setParam(rsMetadata.getColumnType(i)) + "(\"" + rsMetadata.getColumnName(i) + "\"));");
+            retorno.append("\n             ").append(tableName.toLowerCase()).append(".set").append(rsMetadata.getColumnName(i)).append("(rs.get").append(setParam(rsMetadata.getColumnType(i))).append("(\"").append(rsMetadata.getColumnName(i)).append("\"));");
         }
         retorno.append("\n         }");
         retorno.append("\n ");
-        retorno.append("\n         return obj;");
+        retorno.append("\n         return ").append(tableName.toLowerCase()).append(";");
         retorno.append("\n ");
         retorno.append("\n         } catch (Exception ex) {");
         retorno.append("\n              throw ErpServerException.criar(ex);");
@@ -220,18 +220,18 @@ public class TableToClass {
         insertUpdateMetodo.append("\n         final int batchSize = 1000;");
         insertUpdateMetodo.append("\n         int count = 0;");
         insertUpdateMetodo.append("\n");
-        insertUpdateMetodo.append("\n         for (").append(tableName).append(" obj : lista").append(tableName).append(") {");
-        insertUpdateMetodo.append("\n           if( obj.get").append(pkey).append("() == 0 ){");
+        insertUpdateMetodo.append("\n         for (").append(tableName).append(" ").append(tableName.toLowerCase()).append(" : lista").append(tableName).append(") {");
+        insertUpdateMetodo.append("\n           if( "+tableName.toLowerCase()+".get").append(pkey).append("() == 0 ){");
         insertUpdateMetodo.append("\n");
         insertUpdateMetodo.append("\n           rs = stm.executeQuery(\"SELECT nextval(('").append(tableName.toLowerCase()).append("_").append(pkey).append("_seq'::text)::regclass) as id\");");
         insertUpdateMetodo.append("\n           if (rs.next()) {");
-        insertUpdateMetodo.append("\n               obj.set").append(pkey).append("(rs.getInt(\"id\"));");
+        insertUpdateMetodo.append("\n               "+tableName.toLowerCase()+".set").append(pkey).append("(rs.getInt(\"id\"));");
         insertUpdateMetodo.append("\n           }");
         insertUpdateMetodo.append("\n");
         int index = 0;
         for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
             if (!rsMetadata.getColumnName(i).equals(pkey)) {
-                insertUpdateMetodo.append("\n              pstInsert.set").append(setParam(rsMetadata.getColumnType(i))).append("(").append(++index).append(",  obj.get").append(rsMetadata.getColumnName(i)).append("());");
+                insertUpdateMetodo.append("\n              pstInsert.set").append(setParam(rsMetadata.getColumnType(i))).append("(").append(++index).append(",  ").append(tableName.toLowerCase()).append(".get").append(rsMetadata.getColumnName(i)).append("());");
             }
         }
         insertUpdateMetodo.append("\n              pstInsert.addBatch();");
@@ -245,9 +245,9 @@ public class TableToClass {
         String where = "";
         for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
             if (!rsMetadata.getColumnName(i).equals(pkey)) {
-                insertUpdateMetodo.append("\n              pstUpdate.set").append(setParam(rsMetadata.getColumnType(i))).append("(").append(++index).append(",  obj.get").append(rsMetadata.getColumnName(i)).append("());");
+                insertUpdateMetodo.append("\n              pstUpdate.set").append(setParam(rsMetadata.getColumnType(i))).append("(").append(++index).append(",  "+tableName.toLowerCase()+".get").append(rsMetadata.getColumnName(i)).append("());");
             } else {
-                where = "\n              pstUpdate.set" + setParam(rsMetadata.getColumnType(i)) + "(" + rsMetadata.getColumnCount() + ",  obj.get" + rsMetadata.getColumnName(i) + "());";
+                where = "\n              pstUpdate.set" + setParam(rsMetadata.getColumnType(i)) + "(" + rsMetadata.getColumnCount() + ",  "+tableName.toLowerCase()+".get" + rsMetadata.getColumnName(i) + "());";
             }
         }
         insertUpdateMetodo.append(where);
