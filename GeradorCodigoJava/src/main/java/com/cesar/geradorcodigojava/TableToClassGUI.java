@@ -4,17 +4,21 @@
  */
 package com.cesar.geradorcodigojava;
 
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author cesar
  */
 public class TableToClassGUI extends javax.swing.JFrame {
-
+    TableToClass tableToClass;
     /**
      * Creates new form TableToClassGUI
      */
     public TableToClassGUI() {
         initComponents();
+        tableToClass = new TableToClass();
+        setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
     }
 
     /**
@@ -52,6 +56,9 @@ public class TableToClassGUI extends javax.swing.JFrame {
         metodoBuscar = new javax.swing.JEditorPane();
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        tabelaColunasFormatadas = new javax.swing.JTable();
+        jButton2 = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -121,11 +128,12 @@ public class TableToClassGUI extends javax.swing.JFrame {
         gridBagConstraints.gridy = 4;
         getContentPane().add(jLabel4, gridBagConstraints);
 
-        jLabel5.setText("(CamelCase)");
+        jLabel5.setText("Informe no formato CamelCase");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
         getContentPane().add(jLabel5, gridBagConstraints);
 
         classe.setEditable(false);
@@ -167,35 +175,65 @@ public class TableToClassGUI extends javax.swing.JFrame {
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(jTabbedPane1, gridBagConstraints);
 
-        jButton1.setText("Gerar");
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
+        jButton1.setText("Gerar Código Fonte");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        jPanel1.add(jButton1, gridBagConstraints);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButton1)
-                .addContainerGap(362, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButton1)
-                .addContainerGap(39, Short.MAX_VALUE))
-        );
+        tabelaColunasFormatadas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Nome Original", "Nome Formatado CamelCase"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tabelaColunasFormatadas.getTableHeader().setReorderingAllowed(false);
+        jScrollPane7.setViewportView(tabelaColunasFormatadas);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        jPanel1.add(jScrollPane7, gridBagConstraints);
+
+        jButton2.setText("Formatar Nome Colunas");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(jButton2, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridheight = 4;
+        gridBagConstraints.gridheight = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipady = 30;
         gridBagConstraints.weightx = 1.0;
         getContentPane().add(jPanel1, gridBagConstraints);
 
@@ -205,14 +243,19 @@ public class TableToClassGUI extends javax.swing.JFrame {
         gridBagConstraints.gridy = 5;
         getContentPane().add(jLabel6, gridBagConstraints);
 
-        setSize(new java.awt.Dimension(572, 395));
+        setSize(new java.awt.Dimension(1054, 641));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        new TableToClass().gerar(ip.getText(), banco.getText(), usuario.getText(), senha.getText(), tabela.getText(), classe, insercao, remocao, cargaObjeto, leituraObjeto, metodoBuscar);        
+        tableToClass.atualizarMapaColunasFormatadas((DefaultTableModel)tabelaColunasFormatadas.getModel());
+        tableToClass.gerar(ip.getText(), banco.getText(), usuario.getText(), senha.getText(), tabela.getText(), classe, insercao, remocao, cargaObjeto, leituraObjeto, metodoBuscar);        
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        tableToClass.formatarNomeColunas(ip.getText(), banco.getText(), usuario.getText(), senha.getText(), tabela.getText(),(DefaultTableModel)tabelaColunasFormatadas.getModel());
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -262,6 +305,7 @@ public class TableToClassGUI extends javax.swing.JFrame {
     private javax.swing.JEditorPane insercao;
     private javax.swing.JTextField ip;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -275,12 +319,14 @@ public class TableToClassGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JEditorPane leituraObjeto;
     private javax.swing.JEditorPane metodoBuscar;
     private javax.swing.JEditorPane remocao;
     private javax.swing.JTextField senha;
     private javax.swing.JTextField tabela;
+    private javax.swing.JTable tabelaColunasFormatadas;
     private javax.swing.JTextField usuario;
     // End of variables declaration//GEN-END:variables
 }
