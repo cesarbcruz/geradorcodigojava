@@ -67,7 +67,7 @@ public class TableToClass {
             }
             rsMeta.close();
 
-            insercao.setText(criarMetodoSalvarAtualizar(tabela, rsmd, pkey));
+            insercao.setText(criarMetodoSalvarAtualizar(tabela, rsmd, pkey, con));
             cargaobjeto.setText(criarObjetoCarga(tabela, rsmd));
             leituraObjeto.setText(criarLeituraObjeto(tabela, rsmd));
             remocao.setText(criarMetodoExcluir(tabela, pkey));
@@ -177,7 +177,7 @@ public class TableToClass {
         return retorno.toString();
     }
 
-    private String criarMetodoSalvarAtualizar(String tableName, ResultSetMetaData rsMetadata, String pkey) throws Exception {
+    private String criarMetodoSalvarAtualizar(String tableName, ResultSetMetaData rsMetadata, String pkey, Connection con) throws Exception {
         StringBuilder insertUpdateMetodo = new StringBuilder();
 
         insertUpdateMetodo.append("\n   private void salvar").append(tableName).append("(List<").append(tableName).append("> lista").append(tableName).append(") throws ErpServerException {");
@@ -242,7 +242,18 @@ public class TableToClass {
         StringBuilder insertSetPK = new StringBuilder();
         for (int i = 1; i < rsMetadata.getColumnCount() + 1; i++) {
             if (!rsMetadata.getColumnName(i).equals(pkey)) {
-                insertUpdateMetodo.append("\n              pstInsert.set").append(setParam(rsMetadata.getColumnType(i))).append("(").append(++index).append(",  ").append(tableName.toLowerCase()).append(".get").append(formatarNomeColuna(rsMetadata.getColumnName(i), true)).append("());");
+                int nullable = rsMetadata.isNullable(i);
+                if (nullable == ResultSetMetaData.columnNullable && verificaColunaFK(con, tableName, rsMetadata.getColumnName(i))) {
+                    int indice = ++index;
+                    insertUpdateMetodo.append("\n              if(").append(tableName.toLowerCase()).append(".get").append(formatarNomeColuna(rsMetadata.getColumnName(i), true)).append("()").append(" > 0").append("){");
+                    insertUpdateMetodo.append("\n                   pstInsert.set").append(setParam(rsMetadata.getColumnType(i))).append("(").append(indice).append(",  ").append(tableName.toLowerCase()).append(".get").append(formatarNomeColuna(rsMetadata.getColumnName(i), true)).append("());");
+                    insertUpdateMetodo.append("\n              } else {");
+                    insertUpdateMetodo.append("\n                   pstInsert.setNull").append("(").append(indice).append(",  ").append("java.sql.Types.BIGINT").append(");");
+                    insertUpdateMetodo.append("\n              }");
+                } else {
+                    insertUpdateMetodo.append("\n              pstInsert.set").append(setParam(rsMetadata.getColumnType(i))).append("(").append(++index).append(",  ").append(tableName.toLowerCase()).append(".get").append(formatarNomeColuna(rsMetadata.getColumnName(i), true)).append("());");
+
+                }
             } else {
                 insertSetPK.append("\n              pstInsert.set").append(setParam(rsMetadata.getColumnType(i))).append("(").append(rsMetadata.getColumnCount()).append(",  ").append(tableName.toLowerCase()).append(".get").append(formatarNomeColuna(rsMetadata.getColumnName(i), true)).append("());");
             }
@@ -288,6 +299,18 @@ public class TableToClass {
         insertUpdateMetodo.append("\n   }");
 
         return insertUpdateMetodo.toString();
+    }
+
+    public boolean verificaColunaFK(Connection con, String tableName, String nomeColuna) throws SQLException {
+        DatabaseMetaData dm = con.getMetaData();
+        ResultSet rs = dm.getImportedKeys(null, null, tableName);
+        
+        while (rs.next()) {
+            if (rs.getString("FKCOLUMN_NAME").equals(nomeColuna)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String sqlTypeToJavaType(int columnType) {
