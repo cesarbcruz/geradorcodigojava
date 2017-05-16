@@ -231,11 +231,11 @@ public class TableToClass {
         insertUpdateMetodo.append("\n         int count = 0;");
         insertUpdateMetodo.append("\n");
         insertUpdateMetodo.append("\n         for (").append(tableName).append(" ").append(tableName.toLowerCase()).append(" : lista").append(tableName).append(") {");
-        insertUpdateMetodo.append("\n           if( ").append(tableName.toLowerCase()).append(".get").append(pkey).append("() == 0 ){");
+        insertUpdateMetodo.append("\n           if( ").append(tableName.toLowerCase()).append(".get").append(formatarNomeColuna(pkey, true)).append("() == 0 ){");
         insertUpdateMetodo.append("\n");
         insertUpdateMetodo.append("\n           rs = stm.executeQuery(\"SELECT nextval(('").append(tableName.toLowerCase()).append("_").append(pkey).append("_seq'::text)::regclass) as id\");");
         insertUpdateMetodo.append("\n           if (rs.next()) {");
-        insertUpdateMetodo.append("\n               ").append(tableName.toLowerCase()).append(".set").append(pkey).append("(rs.getInt(\"id\"));");
+        insertUpdateMetodo.append("\n               ").append(tableName.toLowerCase()).append(".set").append(formatarNomeColuna(pkey, true)).append("(rs.getInt(\"id\"));");
         insertUpdateMetodo.append("\n           }");
         insertUpdateMetodo.append("\n");
         int index = 0;
