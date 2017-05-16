@@ -62,6 +62,7 @@ public class TableToClassGUI extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("- trabalho e + café");
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         banco.setText("erp");
